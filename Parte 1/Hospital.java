@@ -1,26 +1,25 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.PriorityQueue;
 
 /**
- * Manages the patient queue in a hospital emergency room.
+ * Represents a hospital emergency system using Java's built-in PriorityQueue.
  */
 public class Hospital {
-    private IPriorityQueue<Paciente> patients;
+    private PriorityQueue<Paciente> queue;
 
     /**
-     * Constructs a hospital with a specified priority queue type.
-     *
-     * @param useVectorHeap If true, uses VectorHeap; otherwise, uses WrapperPriorityQueue.
+     * Constructs a hospital with an empty priority queue.
      */
-    public Hospital(boolean useVectorHeap) {
-        patients = PriorityQueueFactory.<Paciente>createQueue(useVectorHeap);
+    public Hospital() {
+        queue = new PriorityQueue<>();
     }
 
     /**
-     * Reads patient data from a CSV file and adds them to the priority queue.
+     * Reads patient data from a CSV file and adds them to the queue.
      *
-     * @param filename The name of the CSV file containing patient data.
+     * @param filename The file containing patient records.
      */
     public void readCSV(String filename) {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
@@ -28,30 +27,30 @@ public class Hospital {
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
                 if (data.length == 3) {
-                    String name = data[0].trim();
-                    String symptom = data[1].trim();
-                    char priority = data[2].trim().charAt(0);
-
-                    if (priority >= 'A' && priority <= 'E') {
-                        patients.add(new Paciente(name, symptom, priority));
-                    } else {
-                        System.out.println("Invalid priority for: " + name);
-                    }
-                } else {
-                    System.out.println("Invalid data format: " + line);
+                    Paciente paciente = new Paciente(data[0].trim(), data[1].trim(), data[2].trim().charAt(0));
+                    queue.add(paciente);
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
+            System.err.println("Error reading file: " + e.getMessage());
         }
     }
 
     /**
-     * Retrieves and removes the highest-priority patient from the queue.
+     * Attends the next patient in the priority queue.
      *
-     * @return The patient with the highest priority.
+     * @return The attended patient, or null if the queue is empty.
      */
     public Paciente attendPatient() {
-        return patients.remove();
+        return queue.poll(); // Removes and returns the highest-priority patient
+    }
+
+    /**
+     * Checks if there are patients waiting.
+     *
+     * @return True if there are patients in the queue, false otherwise.
+     */
+    public boolean hasPatients() {
+        return !queue.isEmpty();
     }
 }
