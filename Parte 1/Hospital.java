@@ -1,25 +1,26 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.PriorityQueue;
 
 /**
- * Represents a hospital emergency system using Java's built-in PriorityQueue.
+ * Handles patient intake and priority-based treatment.
  */
 public class Hospital {
-    private PriorityQueue<Paciente> queue;
+    private IPriorityQueue<Paciente> queue;
 
     /**
-     * Constructs a hospital with an empty priority queue.
+     * Constructs a hospital with the provided priority queue implementation.
+     *
+     * @param queue The priority queue to use (VectorHeap or WrapperPriorityQueue).
      */
-    public Hospital() {
-        queue = new PriorityQueue<>();
+    public Hospital(IPriorityQueue<Paciente> queue) {
+        this.queue = queue;
     }
 
     /**
-     * Reads patient data from a CSV file and adds them to the queue.
+     * Reads patient records from a CSV file and adds them to the queue.
      *
-     * @param filename The file containing patient records.
+     * @param filename Path to the CSV file.
      */
     public void readCSV(String filename) {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
@@ -32,25 +33,25 @@ public class Hospital {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error reading file: " + e.getMessage());
+            System.err.println("Error reading CSV file: " + e.getMessage());
         }
     }
 
     /**
-     * Attends the next patient in the priority queue.
+     * Treats the next patient based on priority.
      *
-     * @return The attended patient, or null if the queue is empty.
+     * @return The attended patient, or null if none.
      */
     public Paciente attendPatient() {
-        return queue.poll(); // Removes and returns the highest-priority patient
+        return queue.remove();
     }
 
     /**
-     * Checks if there are patients waiting.
+     * Checks if there are more patients to attend.
      *
-     * @return True if there are patients in the queue, false otherwise.
+     * @return True if there are pending patients, false otherwise.
      */
     public boolean hasPatients() {
-        return !queue.isEmpty();
+        return (queue.remove() != null || queue instanceof WrapperPriorityQueue); // Avoids errors on peek
     }
 }

@@ -20,15 +20,6 @@ public class Paciente implements Comparable<Paciente> {
     }
 
     /**
-     * Gets the patient's priority.
-     *
-     * @return The priority letter.
-     */
-    public char getPriority() {
-        return priority;
-    }
-
-    /**
      * Compares two patients based on priority.
      *
      * @param other The other patient to compare.
@@ -36,14 +27,9 @@ public class Paciente implements Comparable<Paciente> {
      */
     @Override
     public int compareTo(Paciente other) {
-        return Character.compare(this.priority, other.priority); // Lower letters (A) have higher priority
+        return Character.compare(this.priority, other.priority); // A < B < C < ...
     }
 
-    /**
-     * Returns a string representation of the patient.
-     *
-     * @return A formatted string with name, symptom, and priority.
-     */
     @Override
     public String toString() {
         return name + ", " + symptom + ", " + priority;
